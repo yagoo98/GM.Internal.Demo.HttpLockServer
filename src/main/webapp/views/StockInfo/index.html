@@ -1,0 +1,637 @@
+<html>
+<head>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <meta content="soetek code generator" name="application-name">
+    <meta content="soetek code generator" name="author">
+    <meta content="soetek code generator" name="description">
+    <meta content="soetek code generator" name="generator">
+    <!--python-->
+    <title>股票資訊</title>
+    <link href="../../soe.ico" rel="icon">
+
+    <!-- jquery -->
+    <script crossorigin="anonymous"
+            integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=="
+            referrerpolicy="no-referrer"
+            src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <!--jQuery Serialize Object-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jQuery.serializeObject/2.0.3/jquery.serializeObject.min.js"></script>
+
+    <!-- jquery ui -->
+    <script crossorigin="anonymous"
+            integrity="sha512-uto9mlQzrs59VwILcLiRYeLKPPbS/bT71da/OEBYEwcdNUk8jYIy+D176RYoop1Da+f9mvkYrmj5MCLZWEtQuA=="
+            referrerpolicy="no-referrer"
+            src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <link crossorigin="anonymous" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css"
+          integrity="sha512-aOG0c6nPNzGk+5zjwyJaoRUgCdOrfSDhmMID2u4+OIslr0GjpLKo7Xm0Ao3xmpM4T8AmIouRkqwj1nrdVsLKEQ=="
+          referrerpolicy="no-referrer" rel="stylesheet"/>
+
+
+    <!-- select2 -->
+    <link crossorigin="anonymous" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css"
+          integrity="sha512-nMNlpuaDPrqlEls3IX/Q56H36qvBASwb3ipuo3MxeWbsQB1881ox0cRv7UPTgBlriqoynt35KjEwgGUeUXIPnw=="
+          referrerpolicy="no-referrer" rel="stylesheet"/>
+    <script crossorigin="anonymous"
+            integrity="sha512-2ImtlRlf2VVmiGZsjm9bEyhjGW4dU7B6TNwh/hx/iSByxNENtj3WVE6o/9Lj4TJeVXPi4bnOIMXFIJJAeufa0A=="
+            referrerpolicy="no-referrer"
+            src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+
+    <!-- bootstrap -->
+    <link crossorigin="anonymous" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css"
+          integrity="sha512-GQGU0fMMi238uA+a/bdWJfpUGKUkBdgfFdgBm72SUQ6BeyWjoY/ton0tEjH+OSH9iP4Dfh+7HM0I9f5eR0L/4w=="
+          referrerpolicy="no-referrer" rel="stylesheet"/>
+    <script crossorigin="anonymous"
+            integrity="sha512-OvBgP9A2JBgiRad/mM36mkzXSXaJE9BEIENnVEmeZdITvwT09xnxLtT4twkCa8m/loMbPHsvPl0T8lRGVBwjlQ=="
+            referrerpolicy="no-referrer"
+            src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.min.js"></script>
+
+    <!-- DataTables -->
+    <link crossorigin="anonymous"
+          href="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/css/jquery.dataTables.min.css"
+          integrity="sha512-1k7mWiTNoyx2XtmI96o+hdjP8nn0f3Z2N4oF/9ZZRgijyV4omsKOXEnqL1gKQNPy2MTSP9rIEWGcH/CInulptA=="
+          referrerpolicy="no-referrer" rel="stylesheet"/>
+    <script crossorigin="anonymous"
+            integrity="sha512-BkpSL20WETFylMrcirBahHfSnY++H2O1W+UnEEO4yNIl+jI2+zowyoGJpbtk6bx97fBXf++WJHSSK2MV4ghPcg=="
+            referrerpolicy="no-referrer"
+            src="https://cdnjs.cloudflare.com/ajax/libs/datatables/1.10.21/js/jquery.dataTables.min.js"></script>
+
+    <!--soe code-->
+    <script href="../../js/soe-crud-object-module"></script>
+    <style>
+        body {
+            font-family: arial, "Microsoft JhengHei", "微軟正黑體", sans-serif !important;
+        }
+    </style>
+    <script>
+        "use strict";
+        const soeCrudApp = {
+            entityName : 'StockInfo',
+            formSelector : 'form.soe-form',
+            deleteFormIdPrefix : 'soe-form-delete-',
+            deleteFormSelector : 'form#soe-form-delete-',
+            tableSelector : 'table.soe-datatable',
+            idParamName : 'id',
+            urlServiceCreate :    '../../scripts/StockInfoCreate.groovy',
+            urlServiceRead   :    '../../scripts/StockInfoRead.groovy',
+            urlServiceUpdate :    '../../scripts/StockInfoUpdate.groovy',
+            urlServiceDelete :    '../../scripts/StockInfoDelete.groovy',
+            urlServiceIndex  :   '../../scripts/StockInfoIndex.groovy',
+            urlPageCreate : '../../views/StockInfo/create.html',
+            urlPageEdit : '../../views/StockInfo/edit.html?id=',
+            urlPageIndex : '../../views/StockInfo/index.html'
+        }
+
+        $(document).ready(function () {
+
+            //register event
+            $('button.soe-button-new').click(function () {
+                window.location.href = soeCrudApp.urlPageCreate
+            });
+
+            $(soeCrudApp.formSelector).submit(function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                $("#soe-please-wait").modal("show");
+                let queryCondition = $(soeCrudApp.formSelector).serializeObject();
+                localStorage.setItem('soe.tm.queryCondition', JSON.stringify(queryCondition))
+                call_service_form_submit(soeCrudApp.urlServiceIndex, soeCrudApp.formSelector).then(service_success).catch(service_error)
+            });
+
+            //initialize
+            let queryCondition = localStorage.getItem('soe.tm.queryCondition')
+            if (queryCondition) {
+                queryCondition = JSON.parse(queryCondition)
+                fillForm(soeCrudApp.formSelector, queryCondition)
+                localStorage.setItem('soe.tm.queryCondition', '')
+                $(soeCrudApp.formSelector).trigger('submit')
+            }
+        });
+
+        function service_success(data) {
+            if (!data) {
+                console.log("微服務回傳無效值")
+                show_toast('E', '微服務回傳無效值')
+                return
+            }
+            if (data.response.status !== 0) {
+                console.log("狀態代碼:" + data.response.status + "錯誤訊息:" + data.response.error)
+                show_toast('E', data.response.error)
+                return
+            }
+            //get response
+            let responseResult = JSON.parse(data.response.result)
+
+            // do your job.
+            const column_option_array = [
+                {
+                    title: '功能',
+                    data: 'id',
+                    orderable: false,
+                    render: function (data, type, row, meta) {
+                        const functionHtml =
+                            `
+                               <form action="#" id="${soeCrudApp.deleteFormIdPrefix}${data}"  method="post" onsubmit="return delete_row(this)">
+                                    <a class="btn btn-primary text-white"  href="${soeCrudApp.urlPageEdit}${data}">修改</a>
+                                    <input type="hidden" id="id" name="id"  value="${data}">
+                                    <button type="submit" class="soe-button-delete btn btn-danger" id="soe-button-delete-${data}">刪除</button>
+
+                               </form>
+                            `
+                        return functionHtml
+                    }
+                },
+                {
+                    title: 'ID',
+                    data: 'id'
+                },
+                {
+                    title: '股票ID',
+                    data: 'stockId'
+                },
+                {
+                    title: '交易日期',
+                    data: 'stockDate'
+                },
+                {
+                    title: '開盤價',
+                    data: 'stockOpen'
+                },
+                {
+                    title: '最高價',
+                    data: 'stockHigh',
+                },
+                {
+                    title: '最低價',
+                    data: 'stockLow'
+                },
+                {
+                    title: '收盤價',
+                    data: 'stockClose'
+                },
+                {
+                    title: '已調整收盤價',
+                    data: 'stockAdjClose'
+                },
+                {
+                    title: '交易量',
+                    data: 'stockVol'
+                }
+            ]
+
+            show_dataTable(responseResult, column_option_array, soeCrudApp.tableSelector, soeCrudApp.idParamName)
+            console.log("result:" + data.response.result)
+            $("#soe-please-wait").modal("hide");
+        }
+
+        function service_error(error) {
+            if (typeof error === 'object') {
+                console.log("ajax error: " + JSON.stringify(error))
+                show_toast('E', '存檔失敗')
+            } else {
+                console.log("ajax error: " + error)
+                show_toast('E', '存檔失敗')
+            }
+            $("#soe-please-wait").modal("hide");
+        }
+
+        function delete_row_success(data) {
+            if (!data) {
+                console.log("微服務回傳無效值")
+                show_toast('E', '微服務回傳無效值')
+                return
+            }
+            if (data.response.status !== 0) {
+                console.log("狀態代碼:" + data.response.status + "錯誤訊息:" + data.response.error)
+                show_toast('E', data.response.error)
+                return
+            }
+            //show message
+            show_toast('S', '刪除成功')
+
+            //get response
+            let responseResult = JSON.parse(data.response.result)
+            console.log("result:" + data.response.result)
+
+            // do your job.
+            let rowToRemove = $('tr#'+responseResult[0].id)
+            rowToRemove.remove()
+            $("#soe-please-wait").modal("hide");
+        }
+        function delete_row_error(error) {
+            return service_error(error)
+        }
+        function delete_row(form_to_submit) {
+            //form_to_submit.preventDefault();
+            //form_to_submit.stopPropagation();
+            let id = form_to_submit['id'].value
+            let confirmText = '即將刪除id=' + id + '的資料, 請問是否刪除(Y/N)?'
+            let answer = confirm(confirmText)
+            if (!answer) {
+                return false
+            }
+            $("#soe-please-wait").modal("show");
+            call_service_form_submit(soeCrudApp.urlServiceDelete, soeCrudApp.deleteFormSelector + id).then(delete_row_success).catch(delete_row_error)
+            return false
+        }
+
+        //common
+        function call_service_form_submit(requestUrl, formSelector) {
+            let promiseObj = new Promise(function (resolve, reject) {
+                let requestObj = $(formSelector).serializeObject();
+                let si = getSi()
+                //ES6
+                //requestObj.assign(si)
+                //ES5
+                requestObj = $.extend({}, requestObj, si)
+                let request_str = JSON.stringify(requestObj);
+                $.ajax({
+                    type: "post",
+                    url: requestUrl,
+                    dataType: "json",
+                    data: {
+                        request: request_str
+                    },
+                    success: function (data) {
+                        resolve(data)
+                    },
+                    error: function (error) {
+                        reject(error)
+                    }
+                });
+            });
+            return promiseObj;
+        }
+
+        function call_service_read_by_id(requestUrl, paramName) {
+            let promiseObj = new Promise(function (resolve, reject) {
+
+                let urlParam = new URLSearchParams(window.location.search)
+                let requestObj = {
+                    id : urlParam.get(paramName)
+                }
+
+                //ES6
+                //requestObj.assign(si)
+                //ES5
+                let si = getSi()
+                requestObj = $.extend({}, requestObj, si)
+                let request_str = JSON.stringify(requestObj);
+                $.ajax({
+                    type: "post",
+                    url: requestUrl,
+                    dataType: "json",
+                    data: {
+                        request: request_str
+                    },
+                    success: function (data) {
+                        resolve(data)
+                    },
+                    error: function (error) {
+                        reject(error)
+                    }
+                });
+            });
+            return promiseObj;
+        }
+
+        function show_toast(messageType, messageText) {
+            switch (messageType) {
+                case 'S':
+                    $('#soe-toast-success-text').text(messageText)
+                    $('#soe-toast-success').toast('show')
+                    break;
+                case 'E':
+                    $('#soe-toast-error-text').text(messageText)
+                    $('#soe-toast-error').toast('show')
+                    break;
+            }
+        }
+
+        function getSi() {
+            let urlParam = new URLSearchParams(window.location.search)
+            let si = {
+                si : urlParam.get("si"),
+                ui : urlParam.get("ui"),
+                li : null
+            }
+            if(!si.ui) {
+                si.ui = 'ui'
+            }
+        }
+
+        function getSiParam(prefix) {
+            let si = getSi()
+            return prefix + 'si=' + si.si + '&ui=' + si.ui + '&li' + si.li
+        }
+
+        function show_dataTable(data, column_option_array, tableSelector, rowIdPrperty = 'id') {
+
+            let dataTable = $(tableSelector).DataTable({
+                "searching": true,
+                "paging": true,
+                "pageLength": 100,
+                "ordering": true,
+                "info": true,
+                "autoWidth": false,
+                "responsive": true,
+                "scroller": true,
+                // "scrollX": true,
+                // "scrollCollapse": true,
+                "language": {
+                    "info": "顯示 _PAGE_ 至 _PAGES_",
+                    "search": "搜尋 :",
+                    "paginate": {
+                        "previous": "上一頁",
+                        "next": "下一頁"
+                    },
+                    "lengthMenu": "顯示 _MENU_ 筆資料"
+                },
+                dom: "<'row'<'col-xl-8'B><'col-xl-4'fr>>" +
+                    "<'row'<'col-sm-12'tlp>>",
+                buttons: [
+                    'excel'
+                ],
+                destroy: true,
+                data: data,
+                columns: column_option_array,
+                rowId: rowIdPrperty,
+                order: [[1, "desc"]]
+            });
+
+            dataTable.columns.adjust()
+        }
+
+        function fillForm(formSelector, responseObject) {
+            if (!formSelector) {
+                return
+            }
+
+            if (!responseObject) {
+                return
+            }
+
+            for (const key in responseObject) {
+                if (!responseObject.hasOwnProperty(key)) {
+                    continue
+                }
+
+                let field = $(formSelector+' #' +key)
+
+                if (field.length == 0) {
+                    continue
+                }
+
+                field.val(responseObject[key])
+            }
+        }
+    </script>
+</head>
+<body>
+<!--Toasts Start-->
+<div class="toast bg-success text-white fade sticky-top float-end" id="soe-toast-success">
+    <div class="toast-header bg-success text-white">
+        <strong class="me-auto">成功</strong>
+        <button aria-label="Close" class="btn-close float-end" data-bs-dismiss="toast" type="button"></button>
+    </div>
+    <div class="toast-body">
+        <strong id="soe-toast-success-text">成功</strong>
+    </div>
+</div>
+<div class="toast bg-danger text-white fade sticky-top float-end" id="soe-toast-error">
+    <div class="toast-header bg-danger text-white">
+        <strong class="me-auto">錯誤</strong>
+        <button aria-label="Close" class="btn-close float-end" data-bs-dismiss="toast" type="button"></button>
+    </div>
+    <div class="toast-body">
+        <strong id="soe-toast-error-text">錯誤</strong>
+    </div>
+</div>
+<div class="modal modal-xl" id="soe-please-wait" data-backdrop="static" data-keyboard="false" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">網路傳輸中, 請稍後</h4>
+            </div>
+            <div class="modal-body">
+                <div class="progress">
+                    <div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar"
+                         aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:100%; height: 40px">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Toasts End-->
+
+<div class="container container-fluid mw-100" id="body">
+    <!--頁面標題-->
+    <div class="row mt-3">
+        <!--python-->
+        <h3>股票資訊</h3>
+    </div>
+
+    <div class="card">
+        <form action="#" id="form" class="soe-form" method="post">
+            <input id="id" name="id" type="hidden" value="">
+            <div class="card-header">
+                <div class="row mt-3">
+                    <div class="col-sm-10">
+                        <h4 class="card-title">篩選條件</h4>
+                    </div>
+                    <div class="col-sm-2">
+                        <button class="btn btn-primary pull-right" data-bs-target="#soe-card-body" data-bs-toggle="collapse"
+                                type="button">摺疊
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body collapse show" id="soe-card-body">
+                <button class="soe-button-new btn btn-primary" id="soe-button-new-top" type="button">新增</button>
+                <button class="soe-button-reset btn btn-secondary" id="soe-button-reset-top" type="reset">重填</button>
+                <button class="soe-button-query btn btn-success" id="soe-button-query-top" type="submit">查詢</button>
+                <div class="row mt-3">
+                    <div class="col-sm-6 col-md-4 col-lg-3 mt-3">
+                        <label class="control-label" for="stockIdLow">股票ID (起)</label>
+                        <input class="form-control-sm" id="stockIdLow"
+                               maxlength="10"
+                               minlength="0"
+                               name="stockIdLow"
+                               
+                               type="text"
+                               value="">
+                    </div>
+                    <div class="col-sm-6 col-md-4 col-lg-3 mt-3">
+                        <label class="control-label" for="stockIdHigh">股票ID (訖)</label>
+                        <input class="form-control-sm" id="stockIdHigh"
+                               maxlength="10"
+                               minlength="0"
+                               name="stockIdHigh"
+                               
+                               type="text"
+                               value="">
+                    </div>
+                </div>
+                <div class="row mt3">
+                    <div class="col-sm-6 col-md-4 col-lg-3 mt-3">
+                        <label class="control-label" for="stockDateLow">交易日期 (起)</label>
+                        <input class="form-control-sm" id="stockDateLow"
+                               max="9999-12-31"
+                               min="0001-01-01"
+                               name="stockDateLow"
+                               
+                               type="date"
+                               value="">
+                    </div>
+                    <div class="col-sm-6 col-md-4 col-lg-3 mt-3">
+                        <label class="control-label" for="stockDateHigh">交易日期 (訖)</label>
+                        <input class="form-control-sm" id="stockDateHigh"
+                               max="9999-12-31"
+                               min="0001-01-01"
+                               name="stockDateHigh"
+                               
+                               type="date"
+                               value="">
+                    </div>
+                </div>
+                <div class="row mt3">
+                    <div class="col-sm-6 col-md-4 col-lg-3 mt-3">
+                        <label class="control-label" for="stockOpenLow">開盤價 (起)</label>
+                        <input class="form-control-sm" id="stockOpenLow"
+                               name="stockOpenLow"
+                               
+                               type="number"
+                               value="">
+                    </div>
+                    <div class="col-sm-6 col-md-4 col-lg-3 mt-3">
+                        <label class="control-label" for="stockOpenHigh">開盤價 (訖)</label>
+                        <input class="form-control-sm" id="stockOpenHigh"
+                               name="stockOpenHigh"
+                               
+                               type="number"
+                               value="">
+                    </div>
+                </div>
+                <div class="row mt3">
+                    <div class="col-sm-6 col-md-4 col-lg-3 mt-3">
+                        <label class="control-label" for="stockHighLow">最高價 (起)</label>
+                        <input class="form-control-sm" id="stockHighLow"
+                               name="stockHighLow"
+                               
+                               type="number"
+                               value="">
+                    </div>
+                    <div class="col-sm-6 col-md-4 col-lg-3 mt-3">
+                        <label class="control-label" for="stockHighHigh">最高價 (訖)</label>
+                        <input class="form-control-sm" id="stockHighHigh"
+                               name="stockHighHigh"
+                               
+                               type="number"
+                               value="">
+                    </div>
+                </div>
+                <div class="row mt3">
+                    <div class="col-sm-6 col-md-4 col-lg-3 mt-3">
+                        <label class="control-label" for="stockLowLow">最低價 (起)</label>
+                        <input class="form-control-sm" id="stockLowLow"
+                               name="stockLowLow"
+                               
+                               type="number"
+                               value="">
+                    </div>
+                    <div class="col-sm-6 col-md-4 col-lg-3 mt-3">
+                        <label class="control-label" for="stockLowHigh">最低價 (訖)</label>
+                        <input class="form-control-sm" id="stockLowHigh"
+                               name="stockLowHigh"
+                               
+                               type="number"
+                               value="">
+                    </div>
+                </div>
+                <div class="row mt3">
+                    <div class="col-sm-6 col-md-4 col-lg-3 mt-3">
+                        <label class="control-label" for="stockCloseLow">收盤價 (起)</label>
+                        <input class="form-control-sm" id="stockCloseLow"
+                               name="stockCloseLow"
+                               
+                               type="number"
+                               value="">
+                    </div>
+                    <div class="col-sm-6 col-md-4 col-lg-3 mt-3">
+                        <label class="control-label" for="stockCloseHigh">收盤價 (訖)</label>
+                        <input class="form-control-sm" id="stockCloseHigh"
+                               name="stockCloseHigh"
+                               
+                               type="number"
+                               value="">
+                    </div>
+                </div>
+                <div class="row mt3">
+                    <div class="col-sm-6 col-md-4 col-lg-3 mt-3">
+                        <label class="control-label" for="stockAdjCloseLow">已調整收盤價 (起)</label>
+                        <input class="form-control-sm" id="stockAdjCloseLow"
+                               name="stockAdjCloseLow"
+                               
+                               type="number"
+                               value="">
+                    </div>
+                    <div class="col-sm-6 col-md-4 col-lg-3 mt-3">
+                        <label class="control-label" for="stockAdjCloseHigh">已調整收盤價 (訖)</label>
+                        <input class="form-control-sm" id="stockAdjCloseHigh"
+                               name="stockAdjCloseHigh"
+                               
+                               type="number"
+                               value="">
+                    </div>
+                </div>
+                <div class="row mt3">
+                    <div class="col-sm-6 col-md-4 col-lg-3 mt-3">
+                        <label class="control-label" for="stockVolLow">交易量 (起)</label>
+                        <input class="form-control-sm" id="stockVolLow"
+                               name="stockVolLow"
+                               
+                               type="number"
+                               value="">
+                    </div>
+                    <div class="col-sm-6 col-md-4 col-lg-3 mt-3">
+                        <label class="control-label" for="stockVolHigh">交易量 (訖)</label>
+                        <input class="form-control-sm" id="stockVolHigh"
+                               name="stockVolHigh"
+                               
+                               type="number"
+                               value="">
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer">
+                <button class="soe-button-new btn btn-primary" id="soe-button-new-bottom" type="button">新增</button>
+                <button class="soe-button-reset btn btn-secondary" id="soe-button-reset-bottom" type="reset">重填</button>
+                <button class="soe-button-query btn btn-success" id="soe-button-query-bottom" type="submit">查詢</button>
+            </div>
+        </form>
+    </div>
+    <div class="card mt-3">
+        <div class="card-header">
+            <div class="row mt-3">
+                <div class="col-sm-10">
+                    <h4 class="card-title">篩選結果</h4>
+                </div>
+                <div class="col-sm-2">
+                    <button class="btn btn-primary pull-right" data-bs-target="#soe-card-body-query-result" data-bs-toggle="collapse"
+                            type="button">摺疊
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="card-body collapse show" id="soe-card-body-query-result">
+            <table id="soe-datatable" class="soe-datatable display responsive nowrap" style="width:100%"></table>
+        </div>
+        <div class="card-footer"></div>
+    </div>
+</div>
+
+</body>
+</html>
