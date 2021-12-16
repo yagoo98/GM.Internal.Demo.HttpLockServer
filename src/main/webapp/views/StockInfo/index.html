@@ -67,20 +67,20 @@
     <script>
         "use strict";
         const soeCrudApp = {
-            entityName : 'StockInfo',
-            formSelector : 'form.soe-form',
-            deleteFormIdPrefix : 'soe-form-delete-',
-            deleteFormSelector : 'form#soe-form-delete-',
-            tableSelector : 'table.soe-datatable',
-            idParamName : 'id',
-            urlServiceCreate :    '../../scripts/StockInfoCreate.groovy',
-            urlServiceRead   :    '../../scripts/StockInfoRead.groovy',
-            urlServiceUpdate :    '../../scripts/StockInfoUpdate.groovy',
-            urlServiceDelete :    '../../scripts/StockInfoDelete.groovy',
-            urlServiceIndex  :   '../../scripts/StockInfoIndex.groovy',
-            urlPageCreate : '../../views/StockInfo/create.html',
-            urlPageEdit : '../../views/StockInfo/edit.html?id=',
-            urlPageIndex : '../../views/StockInfo/index.html'
+            entityName: 'StockInfo',
+            formSelector: 'form.soe-form',
+            deleteFormIdPrefix: 'soe-form-delete-',
+            deleteFormSelector: 'form#soe-form-delete-',
+            tableSelector: 'table.soe-datatable',
+            idParamName: 'id',
+            urlServiceCreate: '../../scripts/StockInfoCreate.groovy',
+            urlServiceRead: '../../scripts/StockInfoRead.groovy',
+            urlServiceUpdate: '../../scripts/StockInfoUpdate.groovy',
+            urlServiceDelete: '../../scripts/StockInfoDelete.groovy',
+            urlServiceIndex: '../../scripts/StockInfoIndex.groovy',
+            urlPageCreate: '../../views/StockInfo/create.html',
+            urlPageEdit: '../../views/StockInfo/edit.html?id=',
+            urlPageIndex: '../../views/StockInfo/index.html'
         }
 
         $(document).ready(function () {
@@ -205,6 +205,7 @@
             if (data.response.status !== 0) {
                 console.log("狀態代碼:" + data.response.status + "錯誤訊息:" + data.response.error)
                 show_toast('E', data.response.error)
+                $("#soe-please-wait").modal("hide");
                 return
             }
             //show message
@@ -215,13 +216,15 @@
             console.log("result:" + data.response.result)
 
             // do your job.
-            let rowToRemove = $('tr#'+responseResult[0].id)
+            let rowToRemove = $('tr#' + responseResult[0].id)
             rowToRemove.remove()
             $("#soe-please-wait").modal("hide");
         }
+
         function delete_row_error(error) {
             return service_error(error)
         }
+
         function delete_row(form_to_submit) {
             //form_to_submit.preventDefault();
             //form_to_submit.stopPropagation();
@@ -233,6 +236,7 @@
             }
             $("#soe-please-wait").modal("show");
             call_service_form_submit(soeCrudApp.urlServiceDelete, soeCrudApp.deleteFormSelector + id).then(delete_row_success).catch(delete_row_error)
+            $("#soe-please-wait").modal("hide");
             return false
         }
 
@@ -269,7 +273,7 @@
 
                 let urlParam = new URLSearchParams(window.location.search)
                 let requestObj = {
-                    id : urlParam.get(paramName)
+                    id: urlParam.get(paramName)
                 }
 
                 //ES6
@@ -312,11 +316,11 @@
         function getSi() {
             let urlParam = new URLSearchParams(window.location.search)
             let si = {
-                si : urlParam.get("si"),
-                ui : urlParam.get("ui"),
-                li : null
+                si: urlParam.get("si"),
+                ui: urlParam.get("ui"),
+                li: null
             }
-            if(!si.ui) {
+            if (!si.ui) {
                 si.ui = 'ui'
             }
         }
@@ -377,7 +381,7 @@
                     continue
                 }
 
-                let field = $(formSelector+' #' +key)
+                let field = $(formSelector + ' #' + key)
 
                 if (field.length == 0) {
                     continue
@@ -442,7 +446,8 @@
                         <h4 class="card-title">篩選條件</h4>
                     </div>
                     <div class="col-sm-2">
-                        <button class="btn btn-primary pull-right" data-bs-target="#soe-card-body" data-bs-toggle="collapse"
+                        <button class="btn btn-primary pull-right" data-bs-target="#soe-card-body"
+                                data-bs-toggle="collapse"
                                 type="button">摺疊
                         </button>
                     </div>
@@ -459,7 +464,6 @@
                                maxlength="10"
                                minlength="0"
                                name="stockIdLow"
-                               
                                type="text"
                                value="">
                     </div>
@@ -469,7 +473,6 @@
                                maxlength="10"
                                minlength="0"
                                name="stockIdHigh"
-                               
                                type="text"
                                value="">
                     </div>
@@ -481,7 +484,6 @@
                                max="9999-12-31"
                                min="0001-01-01"
                                name="stockDateLow"
-                               
                                type="date"
                                value="">
                     </div>
@@ -491,7 +493,6 @@
                                max="9999-12-31"
                                min="0001-01-01"
                                name="stockDateHigh"
-                               
                                type="date"
                                value="">
                     </div>
@@ -501,16 +502,16 @@
                         <label class="control-label" for="stockOpenLow">開盤價 (起)</label>
                         <input class="form-control-sm" id="stockOpenLow"
                                name="stockOpenLow"
-                               
                                type="number"
+                               step=any
                                value="">
                     </div>
                     <div class="col-sm-6 col-md-4 col-lg-3 mt-3">
                         <label class="control-label" for="stockOpenHigh">開盤價 (訖)</label>
                         <input class="form-control-sm" id="stockOpenHigh"
                                name="stockOpenHigh"
-                               
                                type="number"
+                               step=any
                                value="">
                     </div>
                 </div>
@@ -519,16 +520,16 @@
                         <label class="control-label" for="stockHighLow">最高價 (起)</label>
                         <input class="form-control-sm" id="stockHighLow"
                                name="stockHighLow"
-                               
                                type="number"
+                               step=any
                                value="">
                     </div>
                     <div class="col-sm-6 col-md-4 col-lg-3 mt-3">
                         <label class="control-label" for="stockHighHigh">最高價 (訖)</label>
                         <input class="form-control-sm" id="stockHighHigh"
                                name="stockHighHigh"
-                               
                                type="number"
+                               step=any
                                value="">
                     </div>
                 </div>
@@ -537,16 +538,16 @@
                         <label class="control-label" for="stockLowLow">最低價 (起)</label>
                         <input class="form-control-sm" id="stockLowLow"
                                name="stockLowLow"
-                               
                                type="number"
+                               step=any
                                value="">
                     </div>
                     <div class="col-sm-6 col-md-4 col-lg-3 mt-3">
                         <label class="control-label" for="stockLowHigh">最低價 (訖)</label>
                         <input class="form-control-sm" id="stockLowHigh"
                                name="stockLowHigh"
-                               
                                type="number"
+                               step=any
                                value="">
                     </div>
                 </div>
@@ -555,16 +556,16 @@
                         <label class="control-label" for="stockCloseLow">收盤價 (起)</label>
                         <input class="form-control-sm" id="stockCloseLow"
                                name="stockCloseLow"
-                               
                                type="number"
+                               step=any
                                value="">
                     </div>
                     <div class="col-sm-6 col-md-4 col-lg-3 mt-3">
                         <label class="control-label" for="stockCloseHigh">收盤價 (訖)</label>
                         <input class="form-control-sm" id="stockCloseHigh"
                                name="stockCloseHigh"
-                               
                                type="number"
+                               step=any
                                value="">
                     </div>
                 </div>
@@ -573,16 +574,16 @@
                         <label class="control-label" for="stockAdjCloseLow">已調整收盤價 (起)</label>
                         <input class="form-control-sm" id="stockAdjCloseLow"
                                name="stockAdjCloseLow"
-                               
                                type="number"
+                               step=any
                                value="">
                     </div>
                     <div class="col-sm-6 col-md-4 col-lg-3 mt-3">
                         <label class="control-label" for="stockAdjCloseHigh">已調整收盤價 (訖)</label>
                         <input class="form-control-sm" id="stockAdjCloseHigh"
                                name="stockAdjCloseHigh"
-                               
                                type="number"
+                               step=any
                                value="">
                     </div>
                 </div>
@@ -591,16 +592,16 @@
                         <label class="control-label" for="stockVolLow">交易量 (起)</label>
                         <input class="form-control-sm" id="stockVolLow"
                                name="stockVolLow"
-                               
                                type="number"
+                               step=any
                                value="">
                     </div>
                     <div class="col-sm-6 col-md-4 col-lg-3 mt-3">
                         <label class="control-label" for="stockVolHigh">交易量 (訖)</label>
                         <input class="form-control-sm" id="stockVolHigh"
                                name="stockVolHigh"
-                               
                                type="number"
+                               step=any
                                value="">
                     </div>
                 </div>
@@ -620,7 +621,8 @@
                     <h4 class="card-title">篩選結果</h4>
                 </div>
                 <div class="col-sm-2">
-                    <button class="btn btn-primary pull-right" data-bs-target="#soe-card-body-query-result" data-bs-toggle="collapse"
+                    <button class="btn btn-primary pull-right" data-bs-target="#soe-card-body-query-result"
+                            data-bs-toggle="collapse"
                             type="button">摺疊
                     </button>
                 </div>

@@ -1,10 +1,9 @@
+import com.example.tablemaintain01.HttpRequester
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
-import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 import javax.naming.Context
@@ -38,17 +37,48 @@ def get_params() {
 def process(paramFields, db, tableName, tableFields, logger) {
     def resultFields = [result: "", status: 1, error: ""]
     //資安檢查
-    if (0==1) {
+    if (0 == 1) {
         resultFields.result = ""
         resultFields.status = 1
         resultFields.error = "權限不足"
         return resultFields
     }
     //欄位檢查
-    if (0==1) {
+    if (0 == 1) {
         resultFields.result = ""
         resultFields.status = 1
         resultFields.error = "輸入錯誤"
+        return resultFields
+    }
+
+    // lock server data verification
+    def httpIn = new HttpRequester("enqueue")
+    Map map1 = new HashMap()
+    map1.put("TABLE_NAME", "STOCK")
+    map1.put("VARKEY", paramFields.id)
+    map1.put("REQ_SYS", "TableMaintain")
+    map1.put("REQ_USER", "Janet")
+    map1.put("LOCK_RW", "R")
+    String input1 = "request=" + new Gson().toJson(map1)
+    def response1 = new Gson().fromJson(httpIn.connect(input1), Map.class)
+
+    switch (response1.get("Action").toString()) {
+        case "locked":
+            def result = response1.get("Result") as List<Map>
+            resultFields.result = ""
+            resultFields.status = -65
+            resultFields.error = result.get(0).get("REQ_USER") + "使用中"
+            break
+        case "new":
+            break
+        default:
+            resultFields.result = ""
+            resultFields.status = -66
+            resultFields.error = "異常錯誤, 請聯絡系統管理員"
+            break
+    }
+
+    if (resultFields.status < 0) {
         return resultFields
     }
 
@@ -77,7 +107,7 @@ def process(paramFields, db, tableName, tableFields, logger) {
     try {
         webContainer = new InitialContext()
         dbSource = (DataSource) webContainer.lookup(db)
-        dbConn =dbSource.getConnection()
+        dbConn = dbSource.getConnection()
         sqlObject = new Sql(dbConn)
 
         int updateCount = sqlObject.executeUpdate(sqlCmd, paramFields)
@@ -96,7 +126,7 @@ def process(paramFields, db, tableName, tableFields, logger) {
         sqlResult = sqlObject.rows(sqlCmd, paramFields)
 
     } catch (Exception ex) {
-        ex.printStackTrace( )
+        ex.printStackTrace()
         resultFields.result = ""
         resultFields.status = 1
         resultFields.error = ex.getMessage()
@@ -109,6 +139,22 @@ def process(paramFields, db, tableName, tableFields, logger) {
     resultFields.result = gson.toJson(sqlResult)
     resultFields.status = 0
     resultFields.error = ""
+
+    // lock server data verification
+    def httpOut = new HttpRequester("dequeue")
+    Map map2 = new HashMap()
+    map2.put("TABLE_NAME", "STOCK")
+    map2.put("VARKEY", paramFields.id)
+    String input2 = "request=" + new Gson().toJson(map2)
+    def response2 = httpOut.connect(input2).toString().toInteger()
+
+    if (response2 != 1) {
+        resultFields.result = ""
+        resultFields.status = -66
+        resultFields.error = "異常錯誤, 請聯絡系統管理員"
+        return resultFields
+    }
+
     return resultFields
 }
 

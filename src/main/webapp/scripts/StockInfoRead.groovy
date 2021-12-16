@@ -1,10 +1,9 @@
+import com.example.tablemaintain01.HttpRequester
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
-import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 import javax.naming.Context
@@ -38,17 +37,48 @@ def get_params() {
 def process(paramFields, db, tableName, tableFields, logger) {
     def resultFields = [result: "", status: 1, error: ""]
     //資安檢查
-    if (0==1) {
+    if (0 == 1) {
         resultFields.result = ""
         resultFields.status = 1
         resultFields.error = "權限不足"
         return resultFields
     }
     //欄位檢查
-    if (0==1) {
+    if (0 == 1) {
         resultFields.result = ""
         resultFields.status = 1
         resultFields.error = "輸入錯誤"
+        return resultFields
+    }
+
+    // lock server data verification
+    def http = new HttpRequester("enqueue")
+    Map map = new HashMap()
+    map.put("TABLE_NAME", "STOCK")
+    map.put("VARKEY", paramFields.id)
+    map.put("REQ_SYS", "TableMaintain")
+    map.put("REQ_USER", "Janet")
+    map.put("LOCK_RW", "R")
+    String input = "request=" + new Gson().toJson(map)
+    def response = new Gson().fromJson(http.connect(input), Map.class)
+
+    switch (response.get("Action").toString()) {
+        case "locked":
+            def result = response.get("Result") as List<Map>
+            resultFields.result = ""
+            resultFields.status = -65
+            resultFields.error = result.get(0).get("REQ_USER") + "使用中"
+            break
+        case "new":
+            break
+        default:
+            resultFields.result = ""
+            resultFields.status = -66
+            resultFields.error = "異常錯誤, 請聯絡系統管理員"
+            break
+    }
+
+    if (resultFields.status < 0) {
         return resultFields
     }
 
@@ -74,7 +104,7 @@ def process(paramFields, db, tableName, tableFields, logger) {
     try {
         webContainer = new InitialContext()
         dbSource = (DataSource) webContainer.lookup(db)
-        dbConn =dbSource.getConnection()
+        dbConn = dbSource.getConnection()
         sqlObject = new Sql(dbConn)
 
         sqlResult = sqlObject.rows(sqlCmd, paramFields)
@@ -85,7 +115,7 @@ def process(paramFields, db, tableName, tableFields, logger) {
             return resultFields
         }
     } catch (Exception ex) {
-        ex.printStackTrace( )
+        ex.printStackTrace()
         resultFields.result = ""
         resultFields.status = 1
         resultFields.error = ex.getMessage()

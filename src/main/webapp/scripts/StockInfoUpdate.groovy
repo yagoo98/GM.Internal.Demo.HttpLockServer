@@ -1,10 +1,9 @@
+import com.example.tablemaintain01.HttpRequester
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
-import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
 import javax.naming.Context
@@ -38,14 +37,14 @@ def get_params() {
 def process(paramFields, db, tableName, tableFields, logger) {
     def resultFields = [result: "", status: 1, error: ""]
     //資安檢查
-    if (0==1) {
+    if (0 == 1) {
         resultFields.result = ""
         resultFields.status = 1
         resultFields.error = "權限不足"
         return resultFields
     }
     //欄位檢查
-    if (0==1) {
+    if (0 == 1) {
         resultFields.result = ""
         resultFields.status = 1
         resultFields.error = "輸入錯誤"
@@ -84,7 +83,7 @@ def process(paramFields, db, tableName, tableFields, logger) {
 
     def setClause = GString.EMPTY
     int lastIndex = tableFields.size() - 1
-    for (int i =0; i < tableFields.size(); i++) {
+    for (int i = 0; i < tableFields.size(); i++) {
         if (i < lastIndex) {
             setClause = setClause + """ "${tableFields[i]}" = :${tableFields[i]}, """
         } else {
@@ -105,7 +104,7 @@ def process(paramFields, db, tableName, tableFields, logger) {
     try {
         webContainer = new InitialContext()
         dbSource = (DataSource) webContainer.lookup(db)
-        dbConn =dbSource.getConnection()
+        dbConn = dbSource.getConnection()
         sqlObject = new Sql(dbConn)
 
         int updateCount = sqlObject.executeUpdate(sqlCmd, paramFields)
@@ -124,7 +123,7 @@ def process(paramFields, db, tableName, tableFields, logger) {
         sqlResult = sqlObject.rows(sqlCmd, paramFields)
 
     } catch (Exception ex) {
-        ex.printStackTrace( )
+        ex.printStackTrace()
         resultFields.result = ""
         resultFields.status = 1
         resultFields.error = ex.getMessage()
@@ -137,6 +136,22 @@ def process(paramFields, db, tableName, tableFields, logger) {
     resultFields.result = gson.toJson(sqlResult)
     resultFields.status = 0
     resultFields.error = ""
+
+    // lock server data verification
+    def http = new HttpRequester("dequeue")
+    Map map = new HashMap()
+    map.put("TABLE_NAME", "STOCK")
+    map.put("VARKEY", paramFields.id)
+    String input = "request=" + new Gson().toJson(map)
+    def response = http.connect(input).toString().toInteger()
+
+    if (response != 1) {
+        resultFields.result = ""
+        resultFields.status = -66
+        resultFields.error = "異常錯誤, 請聯絡系統管理員"
+        return resultFields
+    }
+
     return resultFields
 }
 

@@ -68,20 +68,20 @@
     <script>
         "use strict";
         const soeCrudApp = {
-            entityName : 'StockInfo',
-            formSelector : 'form.soe-form',
-            deleteFormIdPrefix : 'soe-form-delete-',
-            deleteFormSelector : 'form#soe-form-delete-',
-            tableSelector : 'table.soe-datatable',
-            idParamName : 'id',
-            urlServiceCreate :    '../../scripts/StockInfoCreate.groovy',
-            urlServiceRead   :    '../../scripts/StockInfoRead.groovy',
-            urlServiceUpdate :    '../../scripts/StockInfoUpdate.groovy',
-            urlServiceDelete :    '../../scripts/StockInfoDelete.groovy',
-            urlServiceIndex  :   '../../scripts/StockInfoIndex.groovy',
-            urlPageCreate : '../../views/StockInfo/create.html',
-            urlPageEdit : '../../views/StockInfo/edit.html?id=',
-            urlPageIndex : '../../views/StockInfo/index.html'
+            entityName: 'StockInfo',
+            formSelector: 'form.soe-form',
+            deleteFormIdPrefix: 'soe-form-delete-',
+            deleteFormSelector: 'form#soe-form-delete-',
+            tableSelector: 'table.soe-datatable',
+            idParamName: 'id',
+            urlServiceCreate: '../../scripts/StockInfoCreate.groovy',
+            urlServiceRead: '../../scripts/StockInfoRead.groovy',
+            urlServiceUpdate: '../../scripts/StockInfoUpdate.groovy',
+            urlServiceDelete: '../../scripts/StockInfoDelete.groovy',
+            urlServiceIndex: '../../scripts/StockInfoIndex.groovy',
+            urlPageCreate: '../../views/StockInfo/create.html',
+            urlPageEdit: '../../views/StockInfo/edit.html?id=',
+            urlPageIndex: '../../views/StockInfo/index.html'
         }
 
         $(document).ready(function () {
@@ -91,7 +91,7 @@
 
             //register event
             $('button.soe-button-list').click(function () {
-                window.location.href = soeCrudApp.urlPageIndex
+                call_service_form_submit("../../scripts/Dequeue.groovy", soeCrudApp.formSelector).then(service_success).catch(service_error)
             });
 
             $(soeCrudApp.formSelector).submit(function (e) {
@@ -144,6 +144,7 @@
 
             if (data.response.status !== 0) {
                 console.log("狀態代碼:" + data.response.status + "錯誤訊息:" + data.response.error)
+                $("#soe-please-wait").modal("hide");
                 show_toast('E', data.response.error)
                 return
             }
@@ -195,7 +196,7 @@
 
                 let urlParam = new URLSearchParams(window.location.search)
                 let requestObj = {
-                    id : urlParam.get(paramName)
+                    id: urlParam.get(paramName)
                 }
 
                 //ES6
@@ -238,11 +239,11 @@
         function getSi() {
             let urlParam = new URLSearchParams(window.location.search)
             let si = {
-                si : urlParam.get("si"),
-                ui : urlParam.get("ui"),
-                li : null
+                si: urlParam.get("si"),
+                ui: urlParam.get("ui"),
+                li: null
             }
-            if(!si.ui) {
+            if (!si.ui) {
                 si.ui = 'ui'
             }
         }
@@ -303,7 +304,7 @@
                     continue
                 }
 
-                let field = $(formSelector+' #' +key)
+                let field = $(formSelector + ' #' + key)
 
                 if (field.length == 0) {
                     continue
@@ -369,7 +370,8 @@
                         <h4 class="card-title">修改股票資訊</h4>
                     </div>
                     <div class="col-sm-2">
-                        <button class="btn btn-primary pull-right" data-bs-target="#soe-card-body" data-bs-toggle="collapse"
+                        <button class="btn btn-primary pull-right" data-bs-target="#soe-card-body"
+                                data-bs-toggle="collapse"
                                 type="button">摺疊
                         </button>
                     </div>
@@ -410,6 +412,7 @@
                                name="stockOpen"
                                required
                                type="number"
+                               step=any
                                value="">
                     </div>
                     <div class="col-sm-6 col-md-4 col-lg-3 mt-3">
@@ -418,6 +421,7 @@
                                name="stockHigh"
                                required
                                type="number"
+                               step=any
                                value="">
                     </div>
                     <div class="col-sm-6 col-md-4 col-lg-3 mt-3">
@@ -426,6 +430,7 @@
                                name="stockLow"
                                required
                                type="number"
+                               step=any
                                value="">
                     </div>
                     <div class="col-sm-6 col-md-4 col-lg-3 mt-3">
@@ -434,6 +439,7 @@
                                name="stockClose"
                                required
                                type="number"
+                               step=any
                                value="">
                     </div>
                     <div class="col-sm-6 col-md-4 col-lg-3 mt-3">
@@ -442,6 +448,7 @@
                                name="stockAdjClose"
                                required
                                type="number"
+                               step=any
                                value="">
                     </div>
                     <div class="col-sm-6 col-md-4 col-lg-3 mt-3">
@@ -450,6 +457,7 @@
                                name="stockVol"
                                required
                                type="number"
+                               step=any
                                value="">
                     </div>
                 </div>
