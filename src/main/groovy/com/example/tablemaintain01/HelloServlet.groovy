@@ -27,7 +27,7 @@ class HelloServlet extends HttpServlet {
 
         ArrayList<GroovyRowResult> StockInfo
         try {
-            Context webContainer = new InitialContext()
+            InitialContext webContainer = new InitialContext()
             DataSource dbSource = (DataSource) webContainer.lookup("java:/comp/env/jdbc/h2mem")
             Connection dbConn =dbSource.getConnection()
             Sql sqlObject = new Sql(dbConn)
